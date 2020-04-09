@@ -1,13 +1,27 @@
-OBJ_DIR := build
-IMAGE := $(OBJ_DIR)/rootfs.cpio.gz
+$(shell mkdir -p image/build)
 
-$(IMAGE): $(shell find skeleton -type f)
-	mkdir -p $(@D)
-	cp -r skeleton $(OBJ_DIR)
-	cd $(OBJ_DIR)/skeleton/sbin && mips-linux-gnu-gcc -EL \
-	  -O2 -mips32 init.c -o init -nostdlib
-	cd $(OBJ_DIR)/skeleton && find . | cpio --quiet -o -H newc > ../rootfs.cpio
-	gzip -9 -c -n $(OBJ_DIR)/rootfs.cpio > $@
+APPS = halt busybox hello
+APPS_DIR = $(addprefix apps/, $(APPS))
+
+.PHONY: image $(APPS_DIR) clean
+
+export ROOTFS_HOME != pwd
+
+INITRAMFS_TXT := $(PWD)/image/build/initramfs.txt
+
+hello-image: $(addprefix apps/, hello)
+	rm -f $(INITRAMFS_TXT)
+	ln -s $(PWD)/image/skeleton/initramfs-hello.txt \
+	  $(INITRAMFS_TXT)
+
+busybox-image: $(APPS_DIR)
+	rm -f $(INITRAMFS_TXT)
+	ln -s $(PWD)/image/skeleton/initramfs-busybox.txt \
+	  $(INITRAMFS_TXT)
+
+$(APPS_DIR): %:
+	-$(MAKE) -s -C $@ install
 
 clean:
-	rm -rf $(OBJ_DIR)
+	-$(foreach app, $(APPS_DIR), $(MAKE) -s -C $(app) clean ;)
+	-rm -f image/build/*
