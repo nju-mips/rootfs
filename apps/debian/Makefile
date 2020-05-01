@@ -1,4 +1,4 @@
-DEBIAN_HOME := $(ROOTFS_HOME)/../../debian/rootfs
+DEBIAN_HOME := $(ROOTFS_HOME)/../debian/rootfs
 
 INSTALL_APPS += hello.c:/home/hello.c
 
