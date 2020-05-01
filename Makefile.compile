@@ -1,7 +1,4 @@
-include $(ROOTFS_HOME)/Makefile.app
-
-# Compilation flags
-
+OBJ_DIR ?= build
 CROSS_COMPILE ?= mips-linux-gnu-
 
 AS = $(CROSS_COMPILE)gcc
@@ -9,20 +6,18 @@ CC = $(CROSS_COMPILE)gcc
 CXX = $(CROSS_COMPILE)g++
 LD = $(CROSS_COMPILE)gcc
 
-INCLUDES  = $(addprefix -I, $(INC_DIR))
-
-CFLAGS   += -mips32 -EL -O2 -MMD $(INCLUDES)
-CXXFLAGS += -mips32 -EL -O2 -MMD $(INCLUDES)
+CFLAGS   += -mips32 -EL -O2 -MMD -Iinclude
+CXXFLAGS += -mips32 -EL -O2 -MMD -Iinclude
 
 # Files to be compiled
-OBJS = $(addprefix $(DST_DIR)/, $(addsuffix .o, $(basename $(SRCS))))
+OBJS := $(SRCS:%.c=$(OBJ_DIR)/%.o)
 
 # Compilation patterns
-$(DST_DIR)/%.o: %.cpp
+$(OBJ_DIR)/%.o: %.cpp
 	@echo + CXX $<
 	@mkdir -p $(dir $@)
 	@$(CXX) $(CXXFLAGS) -c -o $@ $<
-$(DST_DIR)/%.o: %.c
+$(OBJ_DIR)/%.o: %.c
 	@echo + CC $<
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) -c -o $@ $<
@@ -32,5 +27,7 @@ $(APP): $(OBJS)
 	@$(LD) -EL $(LDFLAGS) -o $(APP) $(OBJS)
 
 # Dependencies
-DEPS = $(addprefix $(DST_DIR)/, $(addsuffix .d, $(basename $(SRCS))))
--include $(DEPS)
+-include $(OBJS:.o=.d)
+
+clean:
+	rm -rf $(OBJ_DIR)

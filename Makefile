@@ -1,27 +1,27 @@
-$(shell mkdir -p image/build)
+APPS     := hello busybox halt
+APPS_DIR := $(addprefix apps/, $(APPS))
+OBJ_DIR  := build
 
-APPS = halt busybox hello
-APPS_DIR = $(addprefix apps/, $(APPS))
+NEMU_DIR      := ../nemu
+NEMU_MIPS32   := $(NEMU_DIR)/build/nemu
+IMAGE_CPIO    := $(OBJ_DIR)/rootfs.cpio
+IMAGE_CPIO_GZ := $(IMAGE_CPIO).gz
 
 .PHONY: image $(APPS_DIR) clean
 
 export ROOTFS_HOME != pwd
 
-INITRAMFS_TXT := $(PWD)/image/build/initramfs.txt
+image: $(IMAGE_CPIO_GZ)
+$(IMAGE_CPIO_GZ): $(IMAGE_CPIO)
+	gzip -9 -c -n $< > $@
 
-hello-image: $(addprefix apps/, hello)
-	rm -f $(INITRAMFS_TXT)
-	ln -s $(PWD)/image/skeleton/initramfs-hello.txt \
-	  $(INITRAMFS_TXT)
-
-busybox-image: $(APPS_DIR)
-	rm -f $(INITRAMFS_TXT)
-	ln -s $(PWD)/image/skeleton/initramfs-busybox.txt \
-	  $(INITRAMFS_TXT)
+$(IMAGE_CPIO): $(APPS_DIR)
+	cd build/root && \
+	  find . | cpio --quiet -o -H newc > ../$(@F)
 
 $(APPS_DIR): %:
 	-$(MAKE) -s -C $@ install
 
 clean:
 	-$(foreach app, $(APPS_DIR), $(MAKE) -s -C $(app) clean ;)
-	-rm -f image/build/*
+	-rm -rf $(OBJ_DIR)

@@ -1,7 +1,3 @@
-NAME = busybox
-
-include $(ROOTFS_HOME)/Makefile.app
-
 export CROSS_COMPILE=$(ROOTFS_HOME)/../buildroot/output/host/bin/mipsel-buildroot-linux-uclibc-
 
 REPO_PATH   := repo
@@ -18,5 +14,7 @@ $(BUSYBOX_ELF): $(CROSS_COMPILE)gcc $(REPO_PATH)
 	cp config $(@D)/.config
 	-$(MAKE) -C $(REPO_PATH) -j16
 
-$(APP): | $(BUSYBOX_ELF)
-	ln -sf $(BUSYBOX_ELF) $(REPO_PATH)/busybox) $@
+APPLETS != cd applets && ls
+INSTALL_APPS := $(BUSYBOX_ELF):/bin/busybox
+INSTALL_APPS := $(foreach app,$(APPLETS),applets/$(app):/bin/$(app))
+include $(ROOTFS_HOME)/Makefile.app
