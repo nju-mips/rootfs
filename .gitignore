@@ -1,14 +1,2 @@
-*.*
-*
-!*/
-!Makefile*
-!.gitignore
-!*.[ch]
-!*.cpp
-!config
-!*.sh
-!*.patch
-!*.txt
-!*.md
 repo/
 build/

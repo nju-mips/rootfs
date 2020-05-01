@@ -1,0 +1,16 @@
+#!/bin/sh
+
+mkdir -p /dev
+/bin/mount -t devtmpfs devtmpfs /dev
+
+exec 0</dev/console
+exec 1>/dev/console
+exec 2>/dev/console
+
+echo "init start"
+ls
+cat init
+date
+halt
+
+exec /bin/init "$@"
