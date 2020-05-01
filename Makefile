@@ -1,4 +1,4 @@
-APPS     := hello busybox halt
+APPS     := hello etc busybox halt
 APPS_DIR := $(addprefix apps/, $(APPS))
 OBJ_DIR  := build
 

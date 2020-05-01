@@ -16,5 +16,5 @@ $(BUSYBOX_ELF): $(CROSS_COMPILE)gcc $(REPO_PATH)
 
 APPLETS != cd applets && ls
 INSTALL_APPS := $(BUSYBOX_ELF):/bin/busybox
-INSTALL_APPS := $(foreach app,$(APPLETS),applets/$(app):/bin/$(app))
+INSTALL_APPS += $(foreach app,$(APPLETS),applets/$(app):/bin/$(app))
 include $(ROOTFS_HOME)/Makefile.app
