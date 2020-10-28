@@ -7,6 +7,10 @@ exec 0</dev/console
 exec 1>/dev/console
 exec 2>/dev/console
 
-/bin/busybox --install -s /bin
+echo "init start"
+ls
+cat init
+date
+halt
 
 exec /bin/init "$@"

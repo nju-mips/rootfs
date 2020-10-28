@@ -1,3 +1,4 @@
+# APPS     := hello quick-init busybox halt # for emu diff-test
 APPS     := hello etc busybox halt
 APPS_DIR := $(addprefix apps/, $(APPS))
 OBJ_DIR  := build
